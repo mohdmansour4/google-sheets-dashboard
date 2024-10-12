@@ -1,4 +1,7 @@
-// Function to fetch data from the Google Sheet and filter it by the last 30 days
+// Add this at the top of your app.js
+console.log("app.js is loaded"); 
+
+// Your existing code with logs
 function getData() {
     console.log("Fetching data from Google Sheets..."); // Debugging log
     gapi.client.sheets.spreadsheets.values.get({
