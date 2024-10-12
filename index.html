@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google Sheets Dashboard</title>
+    <title>Google Sheets Performance Dashboard</title>
 
     <!-- jQuery CDN -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -18,6 +18,19 @@
 </head>
 <body>
     <h1>Performance Dashboard</h1>
+
+    <!-- Date Filter Section -->
+    <div id="filter">
+        <label for="startDate">Start Date:</label>
+        <input type="date" id="startDate">
+        
+        <label for="endDate">End Date:</label>
+        <input type="date" id="endDate">
+        
+        <button id="applyFilter">Apply Filter</button>
+    </div>
+
+    <!-- Dashboard Section where the table will be displayed -->
     <div id="dashboard"></div>
 
     <!-- Load app.js script with cache-busting -->
