@@ -42,8 +42,8 @@ function getData() {
 
 // Function to filter data by date range (default last 30 days)
 function filterDataByDate(data) {
-    const startDateInput = document.getElementById('startDate').value;
-    const endDateInput = document.getElementById('endDate').value;
+    const startDateInput = document.getElementById('startDate') ? document.getElementById('startDate').value : null;
+    const endDateInput = document.getElementById('endDate') ? document.getElementById('endDate').value : null;
     
     const today = new Date();
     const defaultStartDate = new Date(today.setDate(today.getDate() - 30)); // 30 days ago
@@ -111,7 +111,10 @@ $(document).ready(function() {
     gapi.load('client', initClient); // Load the API client and initialize it
 
     // Set up event listener for the "Apply Filter" button
-    document.getElementById('applyFilter').addEventListener('click', () => {
-        getData(); // Re-fetch and filter the data based on selected dates
-    });
+    const applyFilterButton = document.getElementById('applyFilter');
+    if (applyFilterButton) {
+        applyFilterButton.addEventListener('click', () => {
+            getData(); // Re-fetch and filter the data based on selected dates
+        });
+    }
 });
