@@ -89,12 +89,14 @@ function displayData(data) {
         const columnQ = row[16] || ''; // Column Q value (text)
         const columnK = row[10] || ''; // New Column K value (adjust for zero-based index)
         let color = '';
+        let textColor = '#000000'; // Setting text color to black as per the request
+
         if (columnQ.includes('تنعيم، خروج عالي عن المستهدف') || columnQ.includes('تخشين، خروج عالي عن المستهدف')) {
-            color = 'red';
+            color = '#f09c9c'; // Red color changed to #f09c9c
         } else if (columnQ.includes('تخشين، خروج بسيط عن المستهدف') || columnQ.includes('تنعيم، خروج بسيط عن المستهدف')) {
-            color = 'yellow';
+            color = '#6fc8b2'; // Yellow color changed to #6fc8b2
         } else if (columnQ.includes('ضمن المدى المستهدف للمحصول')) {
-            color = 'green';
+            color = '#bce1cd'; // Green color changed to #bce1cd
         }
 
         html += `<tr>
@@ -105,7 +107,7 @@ function displayData(data) {
                     <td>${columnK || ''}</td> <!-- Column K: الفرع -->
                     <td>${row[11] || ''}</td> <!-- Column L: الطحنة -->
                     <td>${row[13] || ''}</td> <!-- Column N: التركيز المناسب TDS% -->
-                    <td style="background-color:${color}">${columnQ}</td> <!-- Column Q: الاجراء -->
+                    <td style="background-color:${color}; color:${textColor}; font-weight:bold;">${columnQ}</td> <!-- Column Q: الاجراء -->
                 </tr>`;
     });
 
