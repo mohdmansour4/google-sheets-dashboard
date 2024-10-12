@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Google Sheets Dashboard</title>
-    
+
     <!-- jQuery CDN -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
@@ -20,18 +20,7 @@
     <h1>Performance Dashboard</h1>
     <div id="dashboard"></div>
 
-    <script>
-        // Function to load app.js with cache-busting
-        function loadScript() {
-            var script = document.createElement('script');
-            script.src = 'app.js?v=' + new Date().getTime(); // Appending timestamp to bypass cache
-            document.head.appendChild(script);
-        }
-
-        // Ensure script is loaded and then initialize the API client
-        window.onload = function() {
-            loadScript();
-        };
-    </script>
+    <!-- Load app.js script with cache-busting -->
+    <script src="app.js?v=1"></script>
 </body>
 </html>
