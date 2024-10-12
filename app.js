@@ -27,12 +27,12 @@ function getData() {
         range: RANGE,
     }).then((response) => {
         const data = response.result.values;
-        console.log("Raw Data: ", data); // Log the raw data retrieved from Google Sheets
+        console.log("Raw Data from Google Sheets: ", data); // Log raw data from Google Sheets
 
         if (data && data.length > 0) {
             console.log("Data retrieved:", data);
             const filteredData = filterDataByDate(data);
-            console.log("Filtered Data: ", filteredData); // Log the filtered data
+            console.log("Filtered Data (after applying date filter and column K check): ", filteredData); // Log filtered data
             displayData(filteredData); // Display filtered data
         } else {
             console.log('No data found.');
@@ -43,7 +43,7 @@ function getData() {
     });
 }
 
-// Function to filter data by date range (default last 30 days)
+// Function to filter data by date range (default last 30 days) and column K content
 function filterDataByDate(data) {
     const startDateInput = document.getElementById('startDate') ? document.getElementById('startDate').value : null;
     const endDateInput = document.getElementById('endDate') ? document.getElementById('endDate').value : null;
@@ -59,17 +59,20 @@ function filterDataByDate(data) {
     const filteredData = data.filter(row => {
         const rowDateStr = row[0]; // Assuming column A contains the date as a string
         const rowDate = parseDate(rowDateStr); // Parse the date
-        return rowDate >= startDate && rowDate <= endDate;
+        const columnK = row[10]; // Assuming column K is at index 10 (0-based index)
+        
+        // Check if the row is within the date range and contains "الخبر 1.3" in column K
+        return rowDate >= startDate && rowDate <= endDate && columnK === "الخبر 1.3";
     });
 
-    console.log("Filtered Data: ", filteredData); // Log the filtered data
+    console.log("Filtered Data after date range and column K check:", filteredData); // Log the filtered data
     return filteredData;
 }
 
 // Helper function to parse the date from Google Sheets (adjust this to your format)
 function parseDate(dateStr) {
-    // Adjust this based on the actual date format in your Google Sheets
-    const dateParts = dateStr.split('/'); // Assuming MM/DD/YYYY format for now
+    const dateParts = dateStr.split('/'); // Adjust this based on the actual date format in your sheet
+    // Assuming the format is "MM/DD/YYYY" or "DD/MM/YYYY"
     if (dateParts.length === 3) {
         const month = parseInt(dateParts[0], 10) - 1; // JavaScript months are 0-based
         const day = parseInt(dateParts[1], 10);
