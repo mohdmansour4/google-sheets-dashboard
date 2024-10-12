@@ -83,7 +83,7 @@ function parseDate(dateStr) {
 // Function to display the filtered data (with conditional formatting)
 function displayData(data) {
     console.log("Displaying data...");
-    let html = '<table border="1" style="direction: rtl; text-align: center;"><tr><th>التاريخ</th><th>اسم الموظف</th><th>المحصول</th><th>نسبة التركيز٪</th><th>الفرع</th><th>الطحنة</th><th>التركيز المناسب</th><th>الاجراء</th></tr>';
+    let html = '<table border="1" style="direction: rtl; text-align: center;"><tr><th>التاريخ</th><th>اسم الموظف</th><th>المحصول</th><th>TDS% نسبة التركيز</th><th>الفرع</th><th>الطحنة</th><th>TDS% التركيز المناسب</th><th>الاجراء</th></tr>';
     
     data.forEach((row, index) => {
         const columnQ = row[16] || ''; // Column Q value (text)
