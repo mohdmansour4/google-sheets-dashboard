@@ -1,7 +1,8 @@
 // Your updated Google Sheets API key and Spreadsheet ID
 const API_KEY = 'AIzaSyD6eAikKznWps9K8GcflqPy03-L7KTUaWE'; // Your API Key
 const SPREADSHEET_ID = '1bZIxAmb2-E3naVHbggvAs4nOAUi0J6XIcGMyU2Bmc5w'; // Your Spreadsheet ID
-const RANGE = 'Drip & COTD!A12:Q'; // The range from A12 to Q12
+const RANGE = 'Drip & COTD!A12:Q'; // The range from A12 to Q (includes K)
+
 
 // Function to initialize the Google API client
 function initClient() {
@@ -32,7 +33,7 @@ function getData() {
         if (data && data.length > 0) {
             console.log("Data retrieved:", data);
             const filteredData = filterDataByDate(data);
-            console.log("Filtered Data (after applying date filter and column K check): ", filteredData); // Log filtered data
+            console.log("Filtered Data (after applying date filter): ", filteredData); // Log filtered data
             displayData(filteredData); // Display filtered data
         } else {
             console.log('No data found.');
@@ -43,7 +44,7 @@ function getData() {
     });
 }
 
-// Function to filter data by date range (default last 30 days) and column K content
+// Function to filter data by date range (default last 30 days)
 function filterDataByDate(data) {
     const startDateInput = document.getElementById('startDate') ? document.getElementById('startDate').value : null;
     const endDateInput = document.getElementById('endDate') ? document.getElementById('endDate').value : null;
@@ -59,13 +60,10 @@ function filterDataByDate(data) {
     const filteredData = data.filter(row => {
         const rowDateStr = row[0]; // Assuming column A contains the date as a string
         const rowDate = parseDate(rowDateStr); // Parse the date
-        const columnK = row[10]; // Assuming column K is at index 10 (0-based index)
-        
-        // Check if the row is within the date range and contains "الخبر 1.3" in column K
-        return rowDate >= startDate && rowDate <= endDate && columnK === "الخبر 1.3";
+        return rowDate >= startDate && rowDate <= endDate;
     });
 
-    console.log("Filtered Data after date range and column K check:", filteredData); // Log the filtered data
+    console.log("Filtered Data after date range:", filteredData); // Log the filtered data
     return filteredData;
 }
 
@@ -85,10 +83,11 @@ function parseDate(dateStr) {
 // Function to display the filtered data (with conditional formatting)
 function displayData(data) {
     console.log("Displaying data...");
-    let html = '<table border="1"><tr><th>Date</th><th>Employee Name</th><th>Column D</th><th>Column G</th><th>Column K</th><th>Column L</th><th>Column N</th><th>Column Q</th></tr>';
+    let html = '<table border="1" style="direction: rtl; text-align: center;"><tr><th>التاريخ</th><th>اسم الموظف</th><th>العمود D</th><th>العمود G</th><th>العمود K</th><th>العمود L</th><th>العمود N</th><th>العمود Q</th></tr>';
     
     data.forEach((row, index) => {
         const columnQ = row[16] || ''; // Column Q value (text)
+        const columnK = row[10] || ''; // New Column K value (adjust for zero-based index)
         let color = '';
         if (columnQ.includes('تنعيم، خروج عالي عن المستهدف') || columnQ.includes('تخشين، خروج عالي عن المستهدف')) {
             color = 'red';
@@ -99,14 +98,14 @@ function displayData(data) {
         }
 
         html += `<tr>
-                    <td>${row[0] || ''}</td> <!-- Column A: Date -->
-                    <td>${row[1] || ''}</td> <!-- Column B -->
-                    <td>${row[3] || ''}</td> <!-- Column D -->
-                    <td>${row[6] || ''}</td> <!-- Column G -->
-                    <td>${row[10] || ''}</td> <!-- Column K -->
-                    <td>${row[11] || ''}</td> <!-- Column L -->
-                    <td>${row[13] || ''}</td> <!-- Column N -->
-                    <td style="background-color:${color}">${columnQ}</td> <!-- Column Q with conditional formatting -->
+                    <td>${row[0] || ''}</td>
+                    <td>${row[1] || ''}</td>
+                    <td>${row[3] || ''}</td>
+                    <td>${row[6] || ''}</td>
+                    <td>${columnK || ''}</td> <!-- New Column K -->
+                    <td>${row[11] || ''}</td>
+                    <td>${row[13] || ''}</td>
+                    <td style="background-color:${color}">${columnQ}</td>
                 </tr>`;
     });
 
