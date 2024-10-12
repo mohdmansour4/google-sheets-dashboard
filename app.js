@@ -53,12 +53,16 @@ function filterDataByDate(data) {
     console.log(`Filtering data between ${startDate} and ${endDate}`);
 
     // Ensure the row date is correctly parsed and filter the data within the selected range
-    return data.filter(row => {
+    const filteredData = data.filter(row => {
         const rowDateStr = row[0]; // Assuming column A contains the date as a string
         const rowDate = parseDate(rowDateStr); // Parse the date
         return rowDate >= startDate && rowDate <= endDate;
     });
+
+    console.log("Filtered Data: ", filteredData); // Log the filtered data
+    return filteredData;
 }
+
 
 // Helper function to parse the date from Google Sheets (adjust this to your format)
 function parseDate(dateStr) {
