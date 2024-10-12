@@ -1,132 +1,129 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google Sheets Performance Dashboard</title>
+// Your updated Google Sheets API key and Spreadsheet ID
+const API_KEY = 'AIzaSyD6eAikKznWps9K8GcflqPy03-L7KTUaWE'; // Your API Key
+const SPREADSHEET_ID = '1bZIxAmb2-E3naVHbggvAs4nOAUi0J6XIcGMyU2Bmc5w'; // Your Spreadsheet ID
+const RANGE = 'Drip & COTD!A12:Q'; // The range from A12 to Q (includes K)
 
-    <!-- jQuery CDN -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-    <!-- Google API Client Library -->
-    <script src="https://apis.google.com/js/api.js"></script>
+// Function to initialize the Google API client
+function initClient() {
+    console.log("Initializing Google API client...");
+    gapi.load('client', () => {
+        gapi.client.init({
+            apiKey: API_KEY,
+            discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4'],
+        }).then(() => {
+            console.log("Google API client initialized successfully.");
+            getData(); // Fetch data initially
+        }).catch((error) => {
+            console.error('Error initializing Google API client:', error);
+        });
+    });
+}
 
-    <!-- Cache-Control Meta Tags -->
-    <meta http-equiv="cache-control" content="no-cache">
-    <meta http-equiv="expires" content="0">
-    <meta http-equiv="pragma" content="no-cache">
+// Function to fetch data from Google Sheets
+function getData() {
+    console.log("Fetching data from Google Sheets...");
+    gapi.client.sheets.spreadsheets.values.get({
+        spreadsheetId: SPREADSHEET_ID,
+        range: RANGE,
+    }).then((response) => {
+        const data = response.result.values;
+        console.log("Raw Data from Google Sheets: ", data); // Log raw data from Google Sheets
 
-    <!-- Custom CSS for Styling -->
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            text-align: center;
-            background-color: #f9f9f9;
+        if (data && data.length > 0) {
+            console.log("Data retrieved:", data);
+            const filteredData = filterDataByDate(data);
+            console.log("Filtered Data (after applying date filter): ", filteredData); // Log filtered data
+            displayData(filteredData); // Display filtered data
+        } else {
+            console.log('No data found.');
+            $('#dashboard').html('<p>No data found in the specified range.</p>');
+        }
+    }).catch((error) => {
+        console.error('Error fetching data:', error);
+    });
+}
+
+// Function to filter data by date range (default last 30 days)
+function filterDataByDate(data) {
+    const startDateInput = document.getElementById('startDate') ? document.getElementById('startDate').value : null;
+    const endDateInput = document.getElementById('endDate') ? document.getElementById('endDate').value : null;
+    
+    const today = new Date();
+    const defaultStartDate = new Date(today.setDate(today.getDate() - 30)); // 30 days ago
+    const startDate = startDateInput ? new Date(startDateInput) : defaultStartDate;
+    const endDate = endDateInput ? new Date(endDateInput) : new Date(); // Default to today
+
+    console.log(`Filtering data between ${startDate} and ${endDate}`);
+
+    // Ensure the row date is correctly parsed and filter the data within the selected range
+    const filteredData = data.filter(row => {
+        const rowDateStr = row[0]; // Assuming column A contains the date as a string
+        const rowDate = parseDate(rowDateStr); // Parse the date
+        return rowDate >= startDate && rowDate <= endDate;
+    });
+
+    console.log("Filtered Data after date range:", filteredData); // Log the filtered data
+    return filteredData;
+}
+
+// Helper function to parse the date from Google Sheets (adjust this to your format)
+function parseDate(dateStr) {
+    const dateParts = dateStr.split('/'); // Adjust this based on the actual date format in your sheet
+    // Assuming the format is "MM/DD/YYYY" or "DD/MM/YYYY"
+    if (dateParts.length === 3) {
+        const month = parseInt(dateParts[0], 10) - 1; // JavaScript months are 0-based
+        const day = parseInt(dateParts[1], 10);
+        const year = parseInt(dateParts[2], 10);
+        return new Date(year, month, day);
+    }
+    return new Date(dateStr); // Fallback for other date formats
+}
+
+// Function to display the filtered data (with conditional formatting)
+function displayData(data) {
+    console.log("Displaying data...");
+    let html = '<table border="1" style="direction: rtl; text-align: center;"><tr><th>التاريخ</th><th>اسم الموظف</th><th>المحصول</th><th>نسبة التركيز TDS%</th><th>الفرع</th><th>الطحنة</th><th>التركيز المناسب TDS%</th><th>الاجراء</th></tr>';
+    
+    data.forEach((row, index) => {
+        const columnQ = row[16] || ''; // Column Q value (text)
+        const columnK = row[10] || ''; // New Column K value (adjust for zero-based index)
+        let color = '';
+        if (columnQ.includes('تنعيم، خروج عالي عن المستهدف') || columnQ.includes('تخشين، خروج عالي عن المستهدف')) {
+            color = 'red';
+        } else if (columnQ.includes('تخشين، خروج بسيط عن المستهدف') || columnQ.includes('تنعيم، خروج بسيط عن المستهدف')) {
+            color = 'yellow';
+        } else if (columnQ.includes('ضمن المدى المستهدف للمحصول')) {
+            color = 'green';
         }
 
-        h1 {
-            font-size: 2.5em;
-            color: #333;
-            margin-top: 20px;
-        }
+        html += `<tr>
+                    <td>${row[0] || ''}</td>
+                    <td>${row[1] || ''}</td>
+                    <td>${row[3] || ''}</td> <!-- Column D: المحصول -->
+                    <td>${row[6] || ''}</td> <!-- Column G: نسبة التركيز TDS% -->
+                    <td>${columnK || ''}</td> <!-- Column K: الفرع -->
+                    <td>${row[11] || ''}</td> <!-- Column L: الطحنة -->
+                    <td>${row[13] || ''}</td> <!-- Column N: التركيز المناسب TDS% -->
+                    <td style="background-color:${color}">${columnQ}</td> <!-- Column Q: الاجراء -->
+                </tr>`;
+    });
 
-        #filter {
-            margin-bottom: 20px;
-        }
+    html += '</table>';
+    $('#dashboard').html(html);
+    console.log("Data displayed successfully.");
+}
 
-        label {
-            font-weight: bold;
-            margin-right: 10px;
-        }
+// Initialize the client when the document is ready
+$(document).ready(function() {
+    console.log("Document is ready. Loading Google API client...");
+    gapi.load('client', initClient); // Load the API client and initialize it
 
-        input[type="date"] {
-            padding: 5px;
-            font-size: 1em;
-            margin-right: 10px;
-        }
-
-        button {
-            padding: 10px 20px;
-            font-size: 1em;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        table {
-            width: 90%;
-            margin: 20px auto;
-            border-collapse: collapse;
-            border: 1px solid #ddd;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            background-color: #fff;
-            border-radius: 8px;
-        }
-
-        th, td {
-            padding: 12px 15px;
-            text-align: center;
-        }
-
-        th {
-            background-color: #4CAF50;
-            color: white;
-            font-size: 1.2em;
-            text-transform: uppercase;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-
-        tr:hover {
-            background-color: #ddd;
-        }
-
-        td {
-            border-bottom: 1px solid #ddd;
-            font-size: 1em;
-        }
-
-        td[style*="background-color:red"] {
-            color: white;
-            font-weight: bold;
-        }
-
-        td[style*="background-color:yellow"] {
-            font-weight: bold;
-        }
-
-        td[style*="background-color:green"] {
-            color: white;
-            font-weight: bold;
-        }
-    </style>
-</head>
-<body>
-    <h1>لوحة أداء الموظفين</h1>
-
-    <!-- Date Filter Section -->
-    <div id="filter">
-        <label for="startDate">تاريخ البداية:</label>
-        <input type="date" id="startDate">
-        
-        <label for="endDate">تاريخ النهاية:</label>
-        <input type="date" id="endDate">
-        
-        <button id="applyFilter">تطبيق الفلتر</button>
-    </div>
-
-    <!-- Dashboard Section where the table will be displayed -->
-    <div id="dashboard"></div>
-
-    <!-- Load app.js script with cache-busting -->
-    <script src="app.js?v=1"></script>
-</body>
-</html>
+    // Set up event listener for the "Apply Filter" button
+    const applyFilterButton = document.getElementById('applyFilter');
+    if (applyFilterButton) {
+        applyFilterButton.addEventListener('click', () => {
+            getData(); // Re-fetch and filter the data based on selected dates
+        });
+    }
+});
