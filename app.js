@@ -53,7 +53,7 @@ function filterLast30Days(data) {
 function displayData(data) {
     let html = '<table border="1"><tr><th>Date</th><th>Employee Name</th><th>Column D</th><th>Column G</th><th>Column L</th><th>Column N</th><th>Column Q</th></tr>';
     data.forEach(row => {
-        html += <tr>
+        html += `<tr>
                     <td>${row[0] || ''}</td> <!-- Column A: Date -->
                     <td>${row[1] || ''}</td> <!-- Column B -->
                     <td>${row[3] || ''}</td> <!-- Column D -->
@@ -61,7 +61,7 @@ function displayData(data) {
                     <td>${row[11] || ''}</td> <!-- Column L -->
                     <td>${row[13] || ''}</td> <!-- Column N -->
                     <td>${row[16] || ''}</td> <!-- Column Q -->
-                </tr>;
+                </tr>`;
     });
     html += '</table>';
     $('#dashboard').html(html); // Update the dashboard with the generated HTML
