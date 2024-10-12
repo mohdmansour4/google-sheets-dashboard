@@ -1,5 +1,7 @@
-// Add this at the top of your app.js
-console.log("app.js is loaded"); 
+// Your updated Google Sheets API key and Spreadsheet ID
+const API_KEY = 'AIzaSyD6eAikKznWps9K8GcflqPy03-L7KTUaWE'; // Your API Key
+const SPREADSHEET_ID = '1bZIxAmb2-E3naVHbggvAs4nOAUi0J6XIcGMyU2Bmc5w'; // Your Spreadsheet ID
+const RANGE = 'Drip & COTD!A12:Q'; // The range from A12 to Q12
 
 // Function to initialize the Google API client
 function initClient() {
