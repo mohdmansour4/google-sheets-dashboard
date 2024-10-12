@@ -27,12 +27,12 @@ function getData() {
         range: RANGE,
     }).then((response) => {
         const data = response.result.values;
-        console.log("Raw Data from Google Sheets: ", data); // Log raw data from Google Sheets
+        console.log("Raw Data: ", data); // Log the raw data retrieved from Google Sheets
 
         if (data && data.length > 0) {
             console.log("Data retrieved:", data);
             const filteredData = filterDataByDate(data);
-            console.log("Filtered Data (after applying date filter): ", filteredData); // Log filtered data
+            console.log("Filtered Data: ", filteredData); // Log the filtered data
             displayData(filteredData); // Display filtered data
         } else {
             console.log('No data found.');
@@ -62,14 +62,14 @@ function filterDataByDate(data) {
         return rowDate >= startDate && rowDate <= endDate;
     });
 
-    console.log("Filtered Data after date range:", filteredData); // Log the filtered data
+    console.log("Filtered Data: ", filteredData); // Log the filtered data
     return filteredData;
 }
 
 // Helper function to parse the date from Google Sheets (adjust this to your format)
 function parseDate(dateStr) {
-    const dateParts = dateStr.split('/'); // Adjust this based on the actual date format in your sheet
-    // Assuming the format is "MM/DD/YYYY" or "DD/MM/YYYY"
+    // Adjust this based on the actual date format in your Google Sheets
+    const dateParts = dateStr.split('/'); // Assuming MM/DD/YYYY format for now
     if (dateParts.length === 3) {
         const month = parseInt(dateParts[0], 10) - 1; // JavaScript months are 0-based
         const day = parseInt(dateParts[1], 10);
