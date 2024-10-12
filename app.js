@@ -27,9 +27,12 @@ function getData() {
         range: RANGE,
     }).then((response) => {
         const data = response.result.values;
+        console.log("Raw Data from Google Sheets: ", data); // Log raw data from Google Sheets
+
         if (data && data.length > 0) {
             console.log("Data retrieved:", data);
             const filteredData = filterDataByDate(data);
+            console.log("Filtered Data (after applying date filter): ", filteredData); // Log filtered data
             displayData(filteredData); // Display filtered data
         } else {
             console.log('No data found.');
@@ -59,10 +62,9 @@ function filterDataByDate(data) {
         return rowDate >= startDate && rowDate <= endDate;
     });
 
-    console.log("Filtered Data: ", filteredData); // Log the filtered data
+    console.log("Filtered Data after date range:", filteredData); // Log the filtered data
     return filteredData;
 }
-
 
 // Helper function to parse the date from Google Sheets (adjust this to your format)
 function parseDate(dateStr) {
