@@ -101,10 +101,10 @@ function displayData(data) {
                     <td>${row[0] || ''}</td>
                     <td>${row[1] || ''}</td>
                     <td>${row[3] || ''}</td> <!-- Column D: المحصول -->
-                    <td>${row[6] || ''}</td> <!-- Column G: نسبة التركيز٪ -->
+                    <td>${row[6] || ''}</td> <!-- Column G:  TDS% نسبة التركيز -->
                     <td>${columnK || ''}</td> <!-- Column K: الفرع -->
                     <td>${row[11] || ''}</td> <!-- Column L: الطحنة -->
-                    <td>${row[13] || ''}</td> <!-- Column N: التركيز المناسب -->
+                    <td>${row[13] || ''}</td> <!-- Column N: TDS% التركيز المناسب -->
                     <td style="background-color:${color}">${columnQ}</td> <!-- Column Q: الاجراء -->
                 </tr>`;
     });
