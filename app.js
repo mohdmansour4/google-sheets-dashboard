@@ -7,11 +7,11 @@ function displayData(data) {
         // Determine the color based on the corrected text in column Q
         let color = '';
         if (columnQ.includes('تنعيم، خروج عالي عن المستهدف') || columnQ.includes('تخشين، خروج عالي عن المستهدف')) {
-            color = 'red'; // Apply red color
-        } else if (columnQ.includes('تخشين، خروج بسيط عن المستهدف')) {
-            color = 'yellow'; // Apply yellow color
+            color = 'red'; // Apply red color for high deviation
+        } else if (columnQ.includes('تخشين، خروج بسيط عن المستهدف') || columnQ.includes('تنعيم، خروج بسيط عن المستهدف')) {
+            color = 'yellow'; // Apply yellow color for slight deviation
         } else if (columnQ.includes('ضمن المدى المستهدف للمحصول')) {
-            color = 'green'; // Apply green color
+            color = 'green'; // Apply green color for within the target range
         }
 
         html += `<tr>
