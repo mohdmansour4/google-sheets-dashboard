@@ -85,7 +85,7 @@ function parseDate(dateStr) {
 // Function to display the filtered data (with conditional formatting)
 function displayData(data) {
     console.log("Displaying data...");
-    let html = '<table border="1"><tr><th>Date</th><th>Employee Name</th><th>Column D</th><th>Column G</th><th>Column L</th><th>Column N</th><th>Column Q</th></tr>';
+    let html = '<table border="1"><tr><th>Date</th><th>Employee Name</th><th>Column D</th><th>Column G</th><th>Column K</th><th>Column L</th><th>Column N</th><th>Column Q</th></tr>';
     
     data.forEach((row, index) => {
         const columnQ = row[16] || ''; // Column Q value (text)
@@ -99,13 +99,14 @@ function displayData(data) {
         }
 
         html += `<tr>
-                    <td>${row[0] || ''}</td>
-                    <td>${row[1] || ''}</td>
-                    <td>${row[3] || ''}</td>
-                    <td>${row[6] || ''}</td>
-                    <td>${row[11] || ''}</td>
-                    <td>${row[13] || ''}</td>
-                    <td style="background-color:${color}">${columnQ}</td>
+                    <td>${row[0] || ''}</td> <!-- Column A: Date -->
+                    <td>${row[1] || ''}</td> <!-- Column B -->
+                    <td>${row[3] || ''}</td> <!-- Column D -->
+                    <td>${row[6] || ''}</td> <!-- Column G -->
+                    <td>${row[10] || ''}</td> <!-- Column K -->
+                    <td>${row[11] || ''}</td> <!-- Column L -->
+                    <td>${row[13] || ''}</td> <!-- Column N -->
+                    <td style="background-color:${color}">${columnQ}</td> <!-- Column Q with conditional formatting -->
                 </tr>`;
     });
 
