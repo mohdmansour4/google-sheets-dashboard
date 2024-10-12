@@ -1,7 +1,23 @@
 // Add this at the top of your app.js
 console.log("app.js is loaded"); 
 
-// Your existing code with logs
+// Function to initialize the Google API client
+function initClient() {
+    console.log("Initializing Google API client..."); // Debugging log
+    gapi.load('client', () => {
+        gapi.client.init({
+            apiKey: API_KEY,
+            discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4'],
+        }).then(() => {
+            console.log("Google API client initialized successfully."); // Debugging log
+            getData(); // Call the function to get data once the client is initialized
+        }).catch((error) => {
+            console.error('Error initializing Google API client:', error); // Log any errors
+        });
+    });
+}
+
+// Function to fetch data from the Google Sheet and filter it by the last 30 days
 function getData() {
     console.log("Fetching data from Google Sheets..."); // Debugging log
     gapi.client.sheets.spreadsheets.values.get({
@@ -58,3 +74,9 @@ function displayData(data) {
     $('#dashboard').html(html); // Update the dashboard with the generated HTML
     console.log("Data displayed successfully."); // Debugging log
 }
+
+// Initialize the client when the document is ready
+$(document).ready(function() {
+    console.log("Document is ready. Loading Google API client...");
+    gapi.load('client', initClient); // Load the API client and initialize it
+});
