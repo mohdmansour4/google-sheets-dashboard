@@ -1,5 +1,5 @@
-// Your updated Google Sheets API key and Spreadsheet ID
-const API_KEY = 'AIzaSyD6eAikKznWps9K8GcflqPy03-L7KTUaWE'; // Your API Key
+// Corrected API Key and Spreadsheet ID Declaration
+const API_KEY = 'AIzaSyD6eAikKznWps9K8GcflqPy03-L7KTUaWE'; // Your Google API Key
 const SPREADSHEET_ID = '1bZIxAmb2-E3naVHbggvAs4nOAUi0J6XIcGMyU2Bmc5w'; // Your Spreadsheet ID
 const RANGE = 'Drip & COTD!A12:Q'; // The range from A12 to Q12
 
@@ -19,7 +19,7 @@ function initClient() {
     });
 }
 
-// Function to fetch data from the Google Sheet and filter it by the last 30 days
+// Function to fetch data from the Google Sheet
 function getData() {
     console.log("Fetching data from Google Sheets..."); // Debugging log
     gapi.client.sheets.spreadsheets.values.get({
