@@ -10,10 +10,17 @@
     <div id="dashboard"></div>
 
     <script>
-        // Dynamically load app.js with a unique timestamp to bypass the cache
-        var script = document.createElement('script');
-        script.src = 'app.js?v=' + new Date().getTime(); // Append timestamp as query string
-        document.head.appendChild(script);
+        // Function to load app.js with cache-busting
+        function loadScript() {
+            var script = document.createElement('script');
+            script.src = 'app.js?v=' + new Date().getTime(); // Appending timestamp to bypass cache
+            document.head.appendChild(script);
+        }
+
+        // Ensure script is loaded and then initialize the API client
+        window.onload = function() {
+            loadScript();
+        };
     </script>
 </body>
 </html>
