@@ -1,7 +1,7 @@
 // Your updated Google Sheets API key and Spreadsheet ID
 const API_KEY = 'AIzaSyD6eAikKznWps9K8GcflqPy03-L7KTUaWE'; // Your new API Key
 const SPREADSHEET_ID = '1bZIxAmb2-E3naVHbggvAs4nOAUi0J6XIcGMyU2Bmc5w'; // Your Spreadsheet ID
-const RANGE = 'Drip & COTD!A1:E'; // The range in your Google Sheet
+const RANGE = 'Drip & COTD!A12:Q'; // The range from A12 to Q12
 
 // Function to initialize the Google API client
 function initClient() {
@@ -17,29 +17,51 @@ function initClient() {
     });
 }
 
-// Function to fetch data from the Google Sheet
+// Function to fetch data from the Google Sheet and filter it by the last 30 days
 function getData() {
     gapi.client.sheets.spreadsheets.values.get({
         spreadsheetId: SPREADSHEET_ID,
         range: RANGE,
     }).then((response) => {
         const data = response.result.values; // Get the values from the response
-        if (data && data.length > 0) { // Check if data is returned
-            displayData(data); // Call function to display the data
+        if (data && data.length > 0) {
+            // Filter the data to only show rows where the date (column A) is within the last 30 days
+            const filteredData = filterLast30Days(data);
+            displayData(filteredData); // Display the filtered data
         } else {
-            console.log('No data found.'); // Log if no data is found
-            $('#dashboard').html('<p>No data found in the specified range.</p>'); // Inform user
+            console.log('No data found.');
+            $('#dashboard').html('<p>No data found in the specified range.</p>');
         }
     }).catch((error) => {
-        console.error('Error fetching data', error); // Log any errors
+        console.error('Error fetching data', error);
     });
 }
 
-// Function to display data in the dashboard
+// Function to filter data for the last 30 days (assumes column A holds the date)
+function filterLast30Days(data) {
+    const today = new Date();
+    const last30Days = new Date(today.setDate(today.getDate() - 30));
+    
+    return data.filter(row => {
+        const dateStr = row[0]; // Assuming column A contains the date in each row
+        const rowDate = new Date(dateStr);
+        return rowDate >= last30Days; // Only include rows from the last 30 days
+    });
+}
+
+// Function to display the filtered data (only showing columns A, B, D, G, L, N, Q)
 function displayData(data) {
-    let html = '<table border="1"><tr><th>Date</th><th>Employee Name</th><th>Location</th><th>Performance</th></tr>';
+    let html = '<table border="1"><tr><th>Date</th><th>Employee Name</th><th>Column D</th><th>Column G</th><th>Column L</th><th>Column N</th><th>Column Q</th></tr>';
     data.forEach(row => {
-        html += `<tr><td>${row[0] || ''}</td><td>${row[1] || ''}</td><td>${row[2] || ''}</td><td>${row[3] || ''}</td></tr>`;
+        html += `<tr>
+                    <td>${row[0] || ''}</td> <!-- Column A: Date -->
+                    <td>${row[1] || ''}</td> <!-- Column B -->
+                    <td>${row[3] || ''}</td> <!-- Column D -->
+                    <td>${row[6] || ''}</td> <!-- Column G -->
+                    <td>${row[11] || ''}</td> <!-- Column L -->
+                    <td>${row[13] || ''}</td> <!-- Column N -->
+                    <td>${row[16] || ''}</td> <!-- Column Q -->
+                </tr>`;
     });
     html += '</table>';
     $('#dashboard').html(html); // Update the dashboard with the generated HTML
