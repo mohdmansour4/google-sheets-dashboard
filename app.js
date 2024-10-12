@@ -94,9 +94,9 @@ function displayData(data) {
         if (columnQ.includes('تنعيم، خروج عالي عن المستهدف') || columnQ.includes('تخشين، خروج عالي عن المستهدف')) {
             color = '#f09c9c'; // Red color changed to #f09c9c
         } else if (columnQ.includes('تخشين، خروج بسيط عن المستهدف') || columnQ.includes('تنعيم، خروج بسيط عن المستهدف')) {
-            color = '#6fc8b2'; // Yellow color changed to #6fc8b2
+            color = '#fce8b2'; // Yellow color changed to #fce8b2
         } else if (columnQ.includes('ضمن المدى المستهدف للمحصول')) {
-            color = '#bce1cd'; // Green color changed to #bce1cd
+            color = '#6fc8b2'; // Green color changed to #6fc8b2
         }
 
         html += `<tr>
