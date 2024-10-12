@@ -1,11 +1,11 @@
+// Function to display the filtered data (with green conditional formatting for target range)
 function displayData(data) {
-    console.log("Displaying data..."); // Debugging log
     let html = '<table border="1"><tr><th>Date</th><th>Employee Name</th><th>Column D</th><th>Column G</th><th>Column L</th><th>Column N</th><th>Column Q</th></tr>';
     
     data.forEach(row => {
         const columnQ = row[16] || ''; // Column Q value (text)
 
-        // Apply green color only if the text matches "ضمن المدى المستهدف للمحصول"
+        // Apply green color if the text matches "ضمن المدى المستهدف للمحصول"
         let color = '';
         if (columnQ.includes('ضمن المدى المستهدف للمحصول')) {
             color = 'green'; // Apply green color
@@ -24,5 +24,4 @@ function displayData(data) {
 
     html += '</table>';
     $('#dashboard').html(html); // Update the dashboard with the generated HTML
-    console.log("Data displayed successfully."); // Debugging log
 }
