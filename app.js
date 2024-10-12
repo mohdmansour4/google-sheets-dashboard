@@ -1,17 +1,14 @@
 function displayData(data) {
+    console.log("Displaying data..."); // Debugging log
     let html = '<table border="1"><tr><th>Date</th><th>Employee Name</th><th>Column D</th><th>Column G</th><th>Column L</th><th>Column N</th><th>Column Q</th></tr>';
     
     data.forEach(row => {
-        const columnQ = row[16] || ''; // Column Q value
+        const columnQ = row[16] || ''; // Column Q value (text)
 
-        // Determine the color based on the value in column Q
+        // Apply green color only if the text matches "ضمن المدى المستهدف للمحصول"
         let color = '';
-        if (columnQ >= 80) {
-            color = 'green';
-        } else if (columnQ >= 50 && columnQ < 80) {
-            color = 'yellow';
-        } else if (columnQ < 50) {
-            color = 'red';
+        if (columnQ.includes('ضمن المدى المستهدف للمحصول')) {
+            color = 'green'; // Apply green color
         }
 
         html += `<tr>
@@ -27,4 +24,5 @@ function displayData(data) {
 
     html += '</table>';
     $('#dashboard').html(html); // Update the dashboard with the generated HTML
+    console.log("Data displayed successfully."); // Debugging log
 }
