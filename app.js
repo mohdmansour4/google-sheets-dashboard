@@ -83,7 +83,7 @@ function parseDate(dateStr) {
 // Function to display the filtered data (with conditional formatting)
 function displayData(data) {
     console.log("Displaying data...");
-    let html = '<table border="1" style="direction: rtl; text-align: center;"><tr><th>التاريخ</th><th>اسم الموظف</th><th>المحصول</th><th>TDS% نسبة التركيز</th><th>الفرع</th><th>الطحنة</th><th>TDS% التركيز المناسب</th><th>الاجراء</th></tr>';
+    let html = '<table border="1" style="direction: rtl; text-align: center;"><tr><th>التاريخ</th><th>اسم الموظف</th><th>المحصول</th><th>نسبة التركيز TDS%</th><th>الفرع</th><th>الطحنة</th><th>التركيز المناسب TDS%</th><th>الاجراء</th></tr>';
     
     data.forEach((row, index) => {
         const columnQ = row[16] || ''; // Column Q value (text)
@@ -101,10 +101,10 @@ function displayData(data) {
                     <td>${row[0] || ''}</td>
                     <td>${row[1] || ''}</td>
                     <td>${row[3] || ''}</td> <!-- Column D: المحصول -->
-                    <td>${row[6] || ''}</td> <!-- Column G: TDS% نسبة التركيز -->
+                    <td>${row[6] || ''}</td> <!-- Column G: نسبة التركيز TDS% -->
                     <td>${columnK || ''}</td> <!-- Column K: الفرع -->
                     <td>${row[11] || ''}</td> <!-- Column L: الطحنة -->
-                    <td>${row[13] || ''}</td> <!-- Column N: TDS% التركيز المناسب -->
+                    <td>${row[13] || ''}</td> <!-- Column N: التركيز المناسب TDS% -->
                     <td style="background-color:${color}">${columnQ}</td> <!-- Column Q: الاجراء -->
                 </tr>`;
     });
