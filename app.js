@@ -1,24 +1,21 @@
-const API_KEY = 'AIzaSyD6eAikKznWps9K8GcflqPy03-L7KTUaWE';
-const SPREADSHEET_ID = '1bZIxAmb2-E3naVHbggvAs4nOAUi0J6XIcGMyU2Bmc5w';
-const RANGE = 'Drip & COTD!A12:S';
-const CLIENT_ID = '1065961533552-4ukc1utf902uldqfq3nvcmrohjehbd2e.apps.googleusercontent.com';
+const API_KEY = 'AIzaSyD6eAikKznWps9K8GcflqPy03-L7KTUaWE';  // Your API key
+const SPREADSHEET_ID = '1bZIxAmb2-E3naVHbggvAs4nOAUi0J6XIcGMyU2Bmc5w';  // Your spreadsheet ID
+const CLIENT_ID = '1065961533552-4ukc1utf902uldqfq3nvcmrohjehbd2e.apps.googleusercontent.com';  // Your OAuth Client ID
+const SCOPE = 'https://www.googleapis.com/auth/spreadsheets';
 
-let gapiInited = false;
-
-function handleClientLoad() {
-    gapi.load('client', initGapiClient);
-}
-
-function initGapiClient() {
+// Initialize the API client and handle OAuth
+function initClient() {
     gapi.client.init({
         apiKey: API_KEY,
-        discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4'],
+        clientId: CLIENT_ID,
+        scope: SCOPE,
+        discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4']
     }).then(() => {
-        console.log('GAPI client loaded for API');
-        gapiInited = true;
-        getData();
-    }, function(error) {
-        console.error('Error loading GAPI client:', error);
+        return gapi.auth2.getAuthInstance().signIn();  // Prompt user to sign in
+    }).then(() => {
+        getData();  // Fetch the data after authentication
+    }).catch((error) => {
+        console.error('Error initializing Google API client:', error);
     });
 }
 
@@ -28,8 +25,8 @@ function getData() {
 
     gapi.client.sheets.spreadsheets.values.get({
         spreadsheetId: SPREADSHEET_ID,
-        range: RANGE,
-    }).then(response => {
+        range: 'Drip & COTD!A12:S',  // Adjust range as needed
+    }).then((response) => {
         const data = response.result.values;
         if (data && data.length > 0) {
             const filteredData = filterDataByDate(data, startDate, endDate);
@@ -38,20 +35,12 @@ function getData() {
             console.log('No data found.');
             document.getElementById('dashboard').innerHTML = '<p>No data found in the specified range.</p>';
         }
-    }).catch(error => {
+    }).catch((error) => {
         console.error('Error fetching data from Google Sheets', error);
     });
 }
 
-function filterDataByDate(data, startDate, endDate) {
-    return data.filter(row => {
-        const rowDate = new Date(row[0]);  // Assuming first column is date
-        const start = new Date(startDate);
-        const end = new Date(endDate);
-        return rowDate >= start && rowDate <= end;
-    });
-}
-
+// Display data in a table
 function displayData(data) {
     let html = `
         <table>
@@ -68,7 +57,7 @@ function displayData(data) {
             </tr>`;
     
     data.forEach((row, index) => {
-        const checkboxValue = row[18] === 'TRUE' ? 'checked' : '';  // Assuming column S is the checkbox
+        const checkboxValue = row[18] === 'TRUE' ? 'checked' : '';
         html += `
             <tr>
                 <td>${row[0] || ''}</td>
@@ -87,9 +76,10 @@ function displayData(data) {
     document.getElementById('dashboard').innerHTML = html;
 }
 
+// Update checkbox status in the Google Sheet
 function updateCheckbox(rowIndex, checked) {
     const checkboxValue = checked ? 'TRUE' : 'FALSE';
-    const range = `S${rowIndex + 13}:S${rowIndex + 13}`;
+    const range = `S${rowIndex + 13}:S${rowIndex + 13}`;  // Adjust based on where data starts in your sheet
 
     gapi.client.sheets.spreadsheets.values.update({
         spreadsheetId: SPREADSHEET_ID,
@@ -98,11 +88,14 @@ function updateCheckbox(rowIndex, checked) {
         resource: {
             values: [[checkboxValue]],
         },
-    }).then(response => {
+    }).then((response) => {
         console.log('Checkbox updated successfully:', response);
-    }).catch(error => {
+    }).catch((error) => {
         console.error('Error updating checkbox:', error);
     });
 }
 
-document.getElementById('applyFilter').addEventListener('click', getData);
+// Initialize the Google API client on document load
+document.addEventListener("DOMContentLoaded", function() {
+    gapi.load('client:auth2', initClient);
+});
