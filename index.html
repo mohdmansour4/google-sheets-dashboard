@@ -22,8 +22,6 @@
             font-family: 'Arial', sans-serif;
             text-align: center;
             background-color: #f9f9f9;
-            padding: 0;
-            margin: 0;
         }
 
         h1 {
@@ -34,9 +32,6 @@
 
         #filter {
             margin-bottom: 20px;
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
         }
 
         label {
@@ -44,18 +39,20 @@
             margin-right: 10px;
         }
 
-        input[type="date"], button {
-            padding: 10px;
+        input[type="date"] {
+            padding: 5px;
             font-size: 1em;
-            margin: 5px;
-            border-radius: 10px;
-            width: 180px;
+            margin-right: 10px;
+            border-radius: 10px; /* Added rounded corners */
         }
 
         button {
+            padding: 10px 20px;
+            font-size: 1em;
             background-color: #007bff;
             color: white;
             border: none;
+            border-radius: 10px; /* Increased border-radius for rounder edges */
             cursor: pointer;
         }
 
@@ -63,26 +60,19 @@
             background-color: #0056b3;
         }
 
-        .table-container {
-            width: 100%;
-            overflow-x: auto; /* Make table horizontally scrollable on small screens */
-        }
-
         table {
             width: 90%;
-            max-width: 1200px;
             margin: 20px auto;
             border-collapse: collapse;
             border: 1px solid #ddd;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             background-color: #fff;
-            border-radius: 15px;
+            border-radius: 15px; /* Increased the border-radius for rounder edges */
         }
 
         th, td {
             padding: 12px 15px;
             text-align: center;
-            word-wrap: break-word; /* Ensure content wraps within cells */
         }
 
         th {
@@ -90,6 +80,8 @@
             color: white;
             font-size: 1.2em;
             text-transform: uppercase;
+            border-top-left-radius: 15px; /* Added rounded corners to the top left */
+            border-top-right-radius: 15px; /* Added rounded corners to the top right */
         }
 
         tr:nth-child(even) {
@@ -118,47 +110,6 @@
             color: white;
             font-weight: bold;
         }
-
-        /* Media Queries for Responsive Design */
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2em;
-            }
-
-            #filter {
-                flex-direction: column;
-            }
-
-            table, th, td {
-                font-size: 0.9em;
-                padding: 10px;
-            }
-
-            input[type="date"], button {
-                width: 100%;
-                font-size: 1em;
-            }
-
-            th, td {
-                word-break: break-word; /* Ensure table content wraps on smaller screens */
-            }
-        }
-
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 1.8em;
-            }
-
-            table, th, td {
-                font-size: 0.8em;
-            }
-
-            input[type="date"], button {
-                width: 100%;
-                font-size: 0.9em;
-                padding: 8px;
-            }
-        }
     </style>
 </head>
 <body>
@@ -176,11 +127,9 @@
     </div>
 
     <!-- Dashboard Section where the table will be displayed -->
-    <div class="table-container">
-        <div id="dashboard"></div>
-    </div>
+    <div id="dashboard"></div>
 
     <!-- Load app.js script with cache-busting -->
-    <script src="app.js?v=5"></script>
+    <script src="app.js?v=3"></script>
 </body>
 </html>
