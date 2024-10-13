@@ -32,8 +32,8 @@ function getData() {
 
         if (data && data.length > 0) {
             console.log("Data retrieved:", data);
-            const filteredData = filterDataByDate(data);
-            console.log("Filtered Data (after applying date filter): ", filteredData); // Log filtered data
+            const filteredData = filterDataByDateAndBranch(data);
+            console.log("Filtered Data (after applying date and الفرع filter): ", filteredData); // Log filtered data
             displayData(filteredData); // Display filtered data
         } else {
             console.log('No data found.');
@@ -44,8 +44,8 @@ function getData() {
     });
 }
 
-// Function to filter data by date range (default last 30 days)
-function filterDataByDate(data) {
+// Function to filter data by date range and "الفرع" (default last 30 days and "الخبر 1.3")
+function filterDataByDateAndBranch(data) {
     const startDateInput = document.getElementById('startDate') ? document.getElementById('startDate').value : null;
     const endDateInput = document.getElementById('endDate') ? document.getElementById('endDate').value : null;
     
@@ -56,14 +56,15 @@ function filterDataByDate(data) {
 
     console.log(`Filtering data between ${startDate} and ${endDate}`);
 
-    // Ensure the row date is correctly parsed and filter the data within the selected range
+    // Filter by date and "الفرع" containing "الخبر 1.3"
     const filteredData = data.filter(row => {
         const rowDateStr = row[0]; // Assuming column A contains the date as a string
         const rowDate = parseDate(rowDateStr); // Parse the date
-        return rowDate >= startDate && rowDate <= endDate;
+        const branch = row[10] || ''; // Assuming column K contains الفرع
+        return rowDate >= startDate && rowDate <= endDate && branch.includes('الخبر 1.3');
     });
 
-    console.log("Filtered Data after date range:", filteredData); // Log the filtered data
+    console.log("Filtered Data after date and الفرع filtering:", filteredData); // Log the filtered data
     return filteredData;
 }
 
@@ -99,7 +100,7 @@ function displayData(data) {
     
     sortedData.forEach((row, index) => {
         const columnQ = row[16] || ''; // Column Q value (text)
-        const columnK = row[10] || ''; // New Column K value (adjust for zero-based index)
+        const columnK = row[10] || ''; // Column K value (filtered for "الخبر 1.3")
         
         // Apply conditional formatting based on values in Column Q with new colors
         let color = '';
