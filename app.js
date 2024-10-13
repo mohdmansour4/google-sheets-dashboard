@@ -5,26 +5,27 @@ const SPREADSHEET_ID = 'YOUR_SPREADSHEET_ID'; // Replace with your Google Sheets
 
 // Initialize Google Identity Services Client
 function initClient() {
-    google.accounts.id.initialize({
-        client_id: CLIENT_ID,
-        callback: handleCredentialResponse
+    gapi.load('client', () => {
+        gapi.client.init({
+            apiKey: API_KEY,
+            discoveryDocs: ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
+        }).then(() => {
+            console.log('Google API client loaded successfully.');
+            getData(); // Fetch data from Google Sheets
+        }, (error) => {
+            console.error("Error loading Google API client", error);
+        });
     });
-    google.accounts.id.prompt(); // Show the one-tap sign-in prompt
-}
-
-// Handle the authentication response
-function handleCredentialResponse(response) {
-    console.log("Encoded JWT ID token: " + response.credential);
-    loadGapiClient(); // Load the Google Sheets API after authentication
 }
 
 // Load the GAPI client and Sheets API
 function loadGapiClient() {
-    gapi.load("client", function () {
+    gapi.load("client", () => {
         gapi.client.setApiKey(API_KEY);
-        gapi.client.load("https://sheets.googleapis.com/$discovery/rest?version=v4").then(function () {
+        gapi.client.load("https://sheets.googleapis.com/$discovery/rest?version=v4").then(() => {
+            console.log("Google Sheets API loaded");
             getData(); // Fetch data from Google Sheets
-        }, function (error) {
+        }, (error) => {
             console.error("Error loading GAPI client for API", error);
         });
     });
