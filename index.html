@@ -4,48 +4,81 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مؤشر أداء حاسبة الاستخلاص لفرع عُمق 1.3</title>
-    <script async defer src="https://apis.google.com/js/api.js"
-            onload="handleClientLoad()"></script>
+
+    <!-- Include the new GIS library -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script>
         const API_KEY = 'AIzaSyD6eAikKznWps9K8GcflqPy03-L7KTUaWE';  // Your API key
         const SPREADSHEET_ID = '1bZIxAmb2-E3naVHbggvAs4nOAUi0J6XIcGMyU2Bmc5w';  // Your spreadsheet ID
         const CLIENT_ID = '1065961533552-4ukc1utf902uldqfq3nvcmrohjehbd2e.apps.googleusercontent.com';  // Your OAuth Client ID
         const SCOPE = 'https://www.googleapis.com/auth/spreadsheets';
 
-        // Load GAPI and handle client load
-        function handleClientLoad() {
-            gapi.load('client:auth2', initClient);
+        let tokenClient;
+        let gapiInited = false;
+        let gisInited = false;
+
+        // Initialize GAPI (Google API Client)
+        function gapiLoaded() {
+            gapi.load('client', initializeGapiClient);
         }
 
-        // Initialize the API client and handle OAuth
-        function initClient() {
+        // Initialize the GAPI client with the Sheets API
+        function initializeGapiClient() {
             gapi.client.init({
                 apiKey: API_KEY,
-                clientId: CLIENT_ID,
-                scope: SCOPE,
                 discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4']
-            }).then(() => {
-                return gapi.auth2.getAuthInstance().signIn();  // Prompt user to sign in
-            }).then(() => {
-                getData();  // Fetch the data after authentication
-            }).catch((error) => {
-                console.error('Error initializing Google API client:', error);
+            }).then(function () {
+                gapiInited = true;
+                maybeEnableButtons();
             });
         }
 
-        // Function to fetch data from the Google Sheet
-        function getData() {
-            const startDate = document.getElementById('startDate').value;
-            const endDate = document.getElementById('endDate').value;
+        // Initialize the GIS (Google Identity Services) client
+        function gisLoaded() {
+            tokenClient = google.accounts.oauth2.initTokenClient({
+                client_id: CLIENT_ID,
+                scope: SCOPE,
+                callback: '', // Will set callback later
+            });
+            gisInited = true;
+            maybeEnableButtons();
+        }
 
+        // Enable the "تنفيذ" button once both GAPI and GIS are initialized
+        function maybeEnableButtons() {
+            if (gapiInited && gisInited) {
+                document.getElementById('applyFilter').style.visibility = 'visible';
+            }
+        }
+
+        // Handle authentication and API call to fetch data
+        function handleAuthClick() {
+            tokenClient.callback = async (response) => {
+                if (response.error !== undefined) {
+                    throw (response);
+                }
+                getData();
+            };
+
+            // Check if we have already an access token
+            if (gapi.client.getToken() === null) {
+                // Request an access token
+                tokenClient.requestAccessToken({ prompt: 'consent' });
+            } else {
+                // Use existing access token
+                getData();
+            }
+        }
+
+        // Fetch data from Google Sheets API
+        function getData() {
             gapi.client.sheets.spreadsheets.values.get({
                 spreadsheetId: SPREADSHEET_ID,
                 range: 'Drip & COTD!A12:S',
             }).then((response) => {
                 const data = response.result.values;
                 if (data && data.length > 0) {
-                    const filteredData = filterDataByDate(data, startDate, endDate);
-                    displayData(filteredData);
+                    displayData(data);
                 } else {
                     console.log('No data found.');
                     document.getElementById('dashboard').innerHTML = '<p>No data found in the specified range.</p>';
@@ -94,7 +127,7 @@
         // Update checkbox status in the Google Sheet
         function updateCheckbox(rowIndex, checked) {
             const checkboxValue = checked ? 'TRUE' : 'FALSE';
-            const range = `S${rowIndex + 13}:S${rowIndex + 13}`;  // Adjust based on where data starts in your sheet
+            const range = `S${rowIndex + 13}:S${rowIndex + 13}`;
 
             gapi.client.sheets.spreadsheets.values.update({
                 spreadsheetId: SPREADSHEET_ID,
@@ -109,6 +142,12 @@
                 console.error('Error updating checkbox:', error);
             });
         }
+
+        // Load the GAPI and GIS clients
+        window.onload = function () {
+            gapiLoaded();
+            gisLoaded();
+        };
     </script>
 </head>
 <body>
@@ -118,67 +157,8 @@
         <input type="date" id="startDate" value="2024-10-13">
         <label for="endDate">إلى:</label>
         <input type="date" id="endDate" value="2024-10-14">
-        <button id="applyFilter">تنفيذ</button>
+        <button id="applyFilter" style="visibility:hidden;" onclick="handleAuthClick()">تنفيذ</button>
     </div>
     <div id="dashboard"></div>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>مؤشر أداء حاسبة الاستخلاص لفرع عُمق 1.3</title>
-  <style>
-    body {
-      font-family: Verdana, sans-serif;
-      text-align: center;
-    }
-    table {
-      margin: 0 auto;
-      border-collapse: collapse;
-      width: 100%;
-    }
-    th, td {
-      border: 1px solid #dddddd;
-      text-align: center;
-      padding: 8px;
-    }
-    th {
-      background-color: cornflowerblue;
-      color: white;
-    }
-    #dashboard {
-      margin-top: 20px;
-    }
-    .filter-button {
-      background-color: #99c2ff;
-      padding: 10px;
-      border: none;
-      color: white;
-      cursor: pointer;
-    }
-    .filter-button:hover {
-      background-color: #85b3ff;
-    }
-  </style>
-</head>
-<body>
-
-  <h1>مؤشر أداء حاسبة الاستخلاص لفرع عُمق 1.3</h1>
-  <p>يقوم مؤشر الاداء بعرض العينات المرفوعة لآخر ٣٠ يوم من الاحدث الى الاقدم، والامكان تغيير المدة المحددة من خانة التاريخ.</p>
-  
-  <label for="startDate">من:</label>
-  <input type="date" id="startDate" value="2024-10-13">
-  <label for="endDate">الى:</label>
-  <input type="date" id="endDate" value="2024-10-14">
-  
-  <button class="filter-button" id="applyFilter">تنفيذ</button>
-  
-  <div id="dashboard"></div>
-
-  <script async defer src="https://apis.google.com/js/api.js" onload="handleClientLoad()"></script>
-  <script src="app.js"></script>
-
 </body>
 </html>
