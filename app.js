@@ -101,14 +101,14 @@ function displayData(data) {
         const columnQ = row[16] || ''; // Column Q value (text)
         const columnK = row[10] || ''; // New Column K value (adjust for zero-based index)
         
-        // Apply conditional formatting based on values in Column Q
+        // Apply conditional formatting based on values in Column Q with new colors
         let color = '';
         if (columnQ.includes('تنعيم، خروج عالي عن المستهدف') || columnQ.includes('تخشين، خروج عالي عن المستهدف')) {
-            color = 'red';
+            color = '#f09c9c'; // Updated red color
         } else if (columnQ.includes('تخشين، خروج بسيط عن المستهدف') || columnQ.includes('تنعيم، خروج بسيط عن المستهدف')) {
-            color = 'yellow';
+            color = '#fce8b2'; // Updated yellow color
         } else if (columnQ.includes('ضمن المدى المستهدف للمحصول')) {
-            color = 'green';
+            color = '#b7e1cd'; // Updated green color
         }
 
         // Add rows to the table
