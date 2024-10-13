@@ -2,6 +2,7 @@
 const API_KEY = 'AIzaSyD6eAikKznWps9K8GcflqPy03-L7KTUaWE'; // Replace with your API key
 const SPREADSHEET_ID = '1bZIxAmb2-E3naVHbggvAs4nOAUi0J6XIcGMyU2Bmc5w'; // Replace with your Spreadsheet ID
 const RANGE = 'Drip & COTD!A12:S'; // Adjust the range to include column S
+const CLIENT_ID = '1065961533552-4ukc1utf902uldqfq3nvcmrohjehbd2e.apps.googleusercontent.com'; // Replace with your actual client ID
 
 // Function to initialize the Google API client
 function initClient() {
