@@ -80,23 +80,33 @@ function parseDate(dateStr) {
     return new Date(dateStr); // Fallback for other date formats
 }
 
-// Function to display the filtered data (with conditional formatting)
+// Function to sort data by date (newest to oldest)
+function sortDataByDate(data) {
+    return data.sort((a, b) => {
+        const dateA = parseDate(a[0]); // Assuming column A is the date
+        const dateB = parseDate(b[0]);
+        return dateB - dateA; // Sort by date in descending order (newest first)
+    });
+}
+
+// Function to display the filtered and sorted data (with conditional formatting)
 function displayData(data) {
     console.log("Displaying data...");
+    // Sort the data by date (newest first)
+    const sortedData = sortDataByDate(data);
+    
     let html = '<table border="1" style="direction: rtl; text-align: center;"><tr><th>التاريخ</th><th>اسم الموظف</th><th>المحصول</th><th>نسبة التركيز TDS%</th><th>الفرع</th><th>الطحنة</th><th>التركيز المناسب TDS%</th><th>الاجراء</th></tr>';
     
-    data.forEach((row, index) => {
+    sortedData.forEach((row, index) => {
         const columnQ = row[16] || ''; // Column Q value (text)
         const columnK = row[10] || ''; // New Column K value (adjust for zero-based index)
         let color = '';
-        let textColor = '#000000'; // Setting text color to black as per the request
-
         if (columnQ.includes('تنعيم، خروج عالي عن المستهدف') || columnQ.includes('تخشين، خروج عالي عن المستهدف')) {
-            color = '#f09c9c'; // Red color changed to #f09c9c
+            color = 'red';
         } else if (columnQ.includes('تخشين، خروج بسيط عن المستهدف') || columnQ.includes('تنعيم، خروج بسيط عن المستهدف')) {
-            color = '#fce8b2'; // Yellow color changed to #fce8b2
+            color = 'yellow';
         } else if (columnQ.includes('ضمن المدى المستهدف للمحصول')) {
-            color = '#6fc8b2'; // Green color changed to #6fc8b2
+            color = 'green';
         }
 
         html += `<tr>
@@ -107,7 +117,7 @@ function displayData(data) {
                     <td>${columnK || ''}</td> <!-- Column K: الفرع -->
                     <td>${row[11] || ''}</td> <!-- Column L: الطحنة -->
                     <td>${row[13] || ''}</td> <!-- Column N: التركيز المناسب TDS% -->
-                    <td style="background-color:${color}; color:${textColor}; font-weight:bold;">${columnQ}</td> <!-- Column Q: الاجراء -->
+                    <td style="background-color:${color}">${columnQ}</td> <!-- Column Q: الاجراء -->
                 </tr>`;
     });
 
