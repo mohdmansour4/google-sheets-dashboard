@@ -19,7 +19,7 @@
     <!-- Custom CSS for Styling -->
     <style>
         body {
-            font-family: 'Verdana', sans-serif; /* Changed to Verdana */
+            font-family: 'Verdana', sans-serif;
             text-align: center;
             background-color: #f9f9f9;
         }
@@ -65,6 +65,7 @@
             background-color: #84B7FF; /* Lighter hover effect */
         }
 
+        /* Table styling with frozen header */
         table {
             width: 90%;
             margin: 20px auto;
@@ -85,6 +86,9 @@
             color: white;
             font-size: 1.2em;
             text-transform: uppercase;
+            position: sticky;
+            top: 0; /* Freezing the first row */
+            z-index: 1;
         }
 
         tr:nth-child(even) {
