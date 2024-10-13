@@ -156,3 +156,13 @@ function displayData(data) {
 // Initialize the client when the document is ready
 $(document).ready(function() {
     console.log("Document is ready. Loading Google API client...");
+    gapi.load('client', initClient); // Load the API client and initialize it
+
+    // Set up event listener for the "Apply Filter" button
+    const applyFilterButton = document.getElementById('applyFilter');
+    if (applyFilterButton) {
+        applyFilterButton.addEventListener('click', () => {
+            getData(); // Re-fetch and filter the data based on selected dates
+        });
+    }
+});
