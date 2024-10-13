@@ -28,16 +28,15 @@ function getData() {
         range: RANGE,
     }).then((response) => {
         const data = response.result.values;
-        console.log("Raw Data from Google Sheets: ", data); // Log raw data from Google Sheets
+        console.log("Fetched Data from Google Sheets:", data); // Log raw data from Google Sheets
 
         if (data && data.length > 0) {
-            console.log("Data retrieved:", data);
             const filteredData = filterDataByDateAndBranch(data);
-            console.log("Filtered Data (after applying date and الفرع filter): ", filteredData); // Log filtered data
-            displayData(filteredData); // Display filtered data
+            console.log("Filtered Data (after date and branch filter):", filteredData);
+            displayData(filteredData); // Display the filtered data
         } else {
-            console.log('No data found.');
-            $('#dashboard').html('<p>No data found in the specified range.</p>');
+            console.log('No data found in the specified range.');
+            $('#dashboard').html('<p>No data found.</p>');
         }
     }).catch((error) => {
         console.error('Error fetching data:', error);
@@ -64,7 +63,7 @@ function filterDataByDateAndBranch(data) {
         return rowDate >= startDate && rowDate <= endDate && branch.includes('الخبر 1.3');
     });
 
-    console.log("Filtered Data after date and الفرع filtering:", filteredData); // Log the filtered data
+    console.log("Filtered Data after date and الفرع filtering:", filteredData); // Log filtered data
     return filteredData;
 }
 
@@ -95,15 +94,17 @@ function updateCheckbox(row, value) {
     const rowNumber = row + 12; // Adjust to match the row in the Google Sheet (start from S12)
     const range = `Drip & COTD!S${rowNumber}`;
 
+    console.log(`Updating checkbox at row ${rowNumber} to:`, value ? 'TRUE' : 'FALSE'); // Log the update operation
+
     gapi.client.sheets.spreadsheets.values.update({
         spreadsheetId: SPREADSHEET_ID,
         range: range,
         valueInputOption: 'USER_ENTERED',
         resource: {
-            values: [[value ? 'TRUE' : 'FALSE']] // Updating checkbox as TRUE or FALSE
+            values: [[value ? 'TRUE' : 'FALSE']]
         }
     }).then(response => {
-        console.log(`Checkbox updated for row ${rowNumber}:`, response);
+        console.log('Checkbox successfully updated in Google Sheets:', response);
         // Re-fetch the data to reflect the new checkbox value
         getData(); 
     }).catch(error => {
@@ -114,37 +115,27 @@ function updateCheckbox(row, value) {
 // Function to display the filtered and sorted data (with editable checkboxes)
 function displayData(data) {
     console.log("Displaying data...");
-    // Sort the data by date (newest first)
     const sortedData = sortDataByDate(data);
-    
-    let html = '<table border="1" style="direction: rtl; text-align: center;"><tr><th>التاريخ</th><th>اسم الموظف</th><th>المحصول</th><th>نسبة التركيز TDS%</th><th>الفرع</th><th>الطحنة</th><th>التركيز المناسب TDS%</th><th>الاجراء</th><th>Column S (Checkbox)</th></tr>'; // Added "Column S"
+
+    let html = '<table border="1" style="direction: rtl; text-align: center;">';
+    html += '<tr><th>التاريخ</th><th>اسم الموظف</th><th>المحصول</th><th>نسبة التركيز TDS%</th><th>الفرع</th><th>الطحنة</th><th>التركيز المناسب TDS%</th><th>الاجراء</th><th>Column S (Checkbox)</th></tr>';
 
     sortedData.forEach((row, index) => {
         const columnQ = row[16] || ''; // Column Q value (text)
-        const columnS = row[18] === 'TRUE' ? true : false; // Column S (checkbox value)
-        const columnK = row[10] || ''; // Column K value (filtered for "الخبر 1.3")
-        
-        // Apply conditional formatting based on values in Column Q with new colors
-        let color = '';
-        if (columnQ.includes('تنعيم، خروج عالي عن المستهدف') || columnQ.includes('تخشين، خروج عالي عن المستهدف')) {
-            color = '#f09c9c'; // Updated red color
-        } else if (columnQ.includes('تخشين، خروج بسيط عن المستهدف') || columnQ.includes('تنعيم، خروج بسيط عن المستهدف')) {
-            color = '#fce8b2'; // Updated yellow color
-        } else if (columnQ.includes('ضمن المدى المستهدف للمحصول')) {
-            color = '#b7e1cd'; // Updated green color
-        }
+        const columnS = row[18] === 'TRUE' ? true : false; // Checkbox value in Column S
 
-        // Add rows to the table
+        console.log(`Row ${index} - Checkbox Value:`, columnS); // Log the checkbox value for debugging
+
         html += `<tr>
                     <td>${row[0] || ''}</td>
                     <td>${row[1] || ''}</td>
-                    <td>${row[3] || ''}</td> <!-- Column D: المحصول -->
-                    <td>${row[6] || ''}</td> <!-- Column G: نسبة التركيز TDS% -->
-                    <td>${columnK || ''}</td> <!-- Column K: الفرع -->
-                    <td>${row[11] || ''}</td> <!-- Column L: الطحنة -->
-                    <td>${row[13] || ''}</td> <!-- Column N: التركيز المناسب TDS% -->
-                    <td style="background-color:${color}">${columnQ}</td> <!-- Column Q: الاجراء -->
-                    <td><input type="checkbox" ${columnS ? 'checked' : ''} onchange="updateCheckbox(${index}, this.checked)"></td> <!-- Editable checkbox for Column S -->
+                    <td>${row[3] || ''}</td>
+                    <td>${row[6] || ''}</td>
+                    <td>${row[10] || ''}</td>
+                    <td>${row[11] || ''}</td>
+                    <td>${row[13] || ''}</td>
+                    <td>${row[16] || ''}</td>
+                    <td><input type="checkbox" ${columnS ? 'checked' : ''} onchange="updateCheckbox(${index}, this.checked)"></td>
                 </tr>`;
     });
 
