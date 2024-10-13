@@ -49,7 +49,7 @@
             font-size: 1em;
             margin: 5px;
             border-radius: 10px;
-            width: 180px; /* Optimized for smaller screens */
+            width: 180px;
         }
 
         button {
@@ -61,6 +61,11 @@
 
         button:hover {
             background-color: #0056b3;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto; /* Make table horizontally scrollable on small screens */
         }
 
         table {
@@ -171,9 +176,11 @@
     </div>
 
     <!-- Dashboard Section where the table will be displayed -->
-    <div id="dashboard"></div>
+    <div class="table-container">
+        <div id="dashboard"></div>
+    </div>
 
     <!-- Load app.js script with cache-busting -->
-    <script src="app.js?v=4"></script>
+    <script src="app.js?v=5"></script>
 </body>
 </html>
