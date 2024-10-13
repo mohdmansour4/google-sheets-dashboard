@@ -5,19 +5,24 @@ const SPREADSHEET_ID = '1bZIxAmb2-E3naVHbggvAs4nOAUi0J6XIcGMyU2Bmc5w'; // Your S
 const SCOPE = 'https://www.googleapis.com/auth/spreadsheets'; // Full access to Google Sheets
 const DISCOVERY_DOCS = ['https://sheets.googleapis.com/$discovery/rest?version=v4'];
 
-// Function to initialize the Google API client and handle OAuth
+// Function to initialize the Google API client and handle OAuth2
 function initClient() {
     gapi.load('client:auth2', () => {
-        gapi.client.init({
-            apiKey: API_KEY,
-            clientId: CLIENT_ID,
-            discoveryDocs: DISCOVERY_DOCS,
+        gapi.auth2.init({
+            client_id: CLIENT_ID,
             scope: SCOPE,
         }).then(() => {
-            gapi.auth2.getAuthInstance().isSignedIn.listen(updateSignInStatus);
-            updateSignInStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
+            gapi.client.init({
+                apiKey: API_KEY,
+                discoveryDocs: DISCOVERY_DOCS
+            }).then(() => {
+                updateSignInStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
+                gapi.auth2.getAuthInstance().isSignedIn.listen(updateSignInStatus);
+            }).catch((error) => {
+                console.error('Error initializing Google API client:', error);
+            });
         }).catch((error) => {
-            console.error('Error initializing Google API client:', error);
+            console.error('Error initializing OAuth2:', error);
         });
     });
 }
