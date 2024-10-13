@@ -100,6 +100,8 @@ function displayData(data) {
     sortedData.forEach((row, index) => {
         const columnQ = row[16] || ''; // Column Q value (text)
         const columnK = row[10] || ''; // New Column K value (adjust for zero-based index)
+        
+        // Apply conditional formatting based on values in Column Q
         let color = '';
         if (columnQ.includes('تنعيم، خروج عالي عن المستهدف') || columnQ.includes('تخشين، خروج عالي عن المستهدف')) {
             color = 'red';
@@ -109,6 +111,7 @@ function displayData(data) {
             color = 'green';
         }
 
+        // Add rows to the table
         html += `<tr>
                     <td>${row[0] || ''}</td>
                     <td>${row[1] || ''}</td>
