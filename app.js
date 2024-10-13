@@ -96,4 +96,52 @@ function displayData(data) {
     // Sort the data by date (newest first)
     const sortedData = sortDataByDate(data);
     
-    let html = '<table border="1" style="direction: rtl; text-align: center;"><tr><th>التاريخ</th><th>اسم الموظف</th><th>المحصول</th><th>نسبة التركيز TDS%</th><th>الفرع</th><th>الطحنة</th><th>التركيز المناسب TDS%</th><th>الاجراء</th
+    let html = '<table border="1" style="direction: rtl; text-align: center;"><tr><th>التاريخ</th><th>اسم الموظف</th><th>المحصول</th><th>نسبة التركيز TDS%</th><th>الفرع</th><th>الطحنة</th><th>التركيز المناسب TDS%</th><th>الاجراء</th><th>Column S</th></tr>'; // Added "Column S"
+
+    sortedData.forEach((row, index) => {
+        const columnQ = row[16] || ''; // Column Q value (text)
+        const columnS = row[18] || ''; // Column S value (newly fetched)
+        const columnK = row[10] || ''; // Column K value (filtered for "الخبر 1.3")
+        
+        // Apply conditional formatting based on values in Column Q with new colors
+        let color = '';
+        if (columnQ.includes('تنعيم، خروج عالي عن المستهدف') || columnQ.includes('تخشين، خروج عالي عن المستهدف')) {
+            color = '#f09c9c'; // Updated red color
+        } else if (columnQ.includes('تخشين، خروج بسيط عن المستهدف') || columnQ.includes('تنعيم، خروج بسيط عن المستهدف')) {
+            color = '#fce8b2'; // Updated yellow color
+        } else if (columnQ.includes('ضمن المدى المستهدف للمحصول')) {
+            color = '#b7e1cd'; // Updated green color
+        }
+
+        // Add rows to the table
+        html += `<tr>
+                    <td>${row[0] || ''}</td>
+                    <td>${row[1] || ''}</td>
+                    <td>${row[3] || ''}</td> <!-- Column D: المحصول -->
+                    <td>${row[6] || ''}</td> <!-- Column G: نسبة التركيز TDS% -->
+                    <td>${columnK || ''}</td> <!-- Column K: الفرع -->
+                    <td>${row[11] || ''}</td> <!-- Column L: الطحنة -->
+                    <td>${row[13] || ''}</td> <!-- Column N: التركيز المناسب TDS% -->
+                    <td style="background-color:${color}">${columnQ}</td> <!-- Column Q: الاجراء -->
+                    <td>${columnS || ''}</td> <!-- Column S -->
+                </tr>`;
+    });
+
+    html += '</table>';
+    $('#dashboard').html(html);
+    console.log("Data displayed successfully.");
+}
+
+// Initialize the client when the document is ready
+$(document).ready(function() {
+    console.log("Document is ready. Loading Google API client...");
+    gapi.load('client', initClient); // Load the API client and initialize it
+
+    // Set up event listener for the "Apply Filter" button
+    const applyFilterButton = document.getElementById('applyFilter');
+    if (applyFilterButton) {
+        applyFilterButton.addEventListener('click', () => {
+            getData(); // Re-fetch and filter the data based on selected dates
+        });
+    }
+});
