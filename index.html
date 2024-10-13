@@ -8,97 +8,52 @@
         body {
             font-family: Verdana, sans-serif;
             text-align: center;
-            background-color: #f9f9f9;
+            background-color: #f4f4f4;
         }
-
         h1 {
             color: cornflowerblue;
         }
-
-        .container {
-            margin: 20px auto;
-            padding: 20px;
-            width: 80%;
-            background-color: white;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-        }
-
         table {
-            width: 100%;
+            width: 80%;
+            margin: 20px auto;
             border-collapse: collapse;
-            margin-top: 20px;
+            text-align: center;
+            background-color: white;
         }
-
         th, td {
             padding: 10px;
             border: 1px solid #ddd;
-            text-align: center;
         }
-
         th {
-            background-color: cornflowerblue;
-            color: white;
+            background-color: #acc9fe;
         }
-
+        input[type="checkbox"] {
+            transform: scale(1.5);
+        }
         button {
             background-color: #4CAF50;
             color: white;
             padding: 10px 20px;
             border: none;
-            border-radius: 5px;
             cursor: pointer;
         }
-
         button:hover {
             background-color: #45a049;
         }
-
-        input[type="date"] {
-            padding: 8px;
-            margin: 10px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-        }
     </style>
-    <!-- Google Identity Services -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <!-- Google API Library -->
     <script src="https://apis.google.com/js/api.js"></script>
+    <script src="app.js"></script>
 </head>
 <body>
-
-    <div class="container">
-        <h1>مؤشر أداء حاسبة الاستخلاص لفرع عُمق 1.3</h1>
-        <p>يقوم مؤشر الاداء بعرض العينات المرفوعة لآخر ٣٠ يوم من الاحدث الى الاقدم، والامكان تغيير المدة المحددة من خانة التاريخ.</p>
-
-        <!-- Date Filters -->
-        <label for="start-date">من:</label>
+    <h1>مؤشر أداء حاسبة الاستخلاص لفرع عُمق 1.3</h1>
+    <p>يقوم مؤشر الاداء بعرض العينات المرفوعة لآخر ٣٠ يوم من الاحدث الى الاقدم، والامكان تغيير المدة المحددة من خانة التاريخ.</p>
+    <div id="filter">
+        <label for="startDate">من:</label>
         <input type="date" id="startDate">
-        <label for="end-date">الى:</label>
+        <label for="endDate">الى:</label>
         <input type="date" id="endDate">
         <button id="applyFilter">تنفيذ</button>
-
-        <!-- Data Table -->
-        <table id="dataTable">
-            <thead>
-                <tr>
-                    <th>التاريخ</th>
-                    <th>اسم الموظف</th>
-                    <th>المحصول</th>
-                    <th>نسبة التركيز TDS%</th>
-                    <th>الفرع</th>
-                    <th>الطحنة</th>
-                    <th>التركيز المناسب TDS%</th>
-                    <th>الاجراء</th>
-                    <th>Column S (CHECKBOX)</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
     </div>
-
-    <script src="app.js"></script>
-
+    <div id="dashboard"></div>
 </body>
 </html>
