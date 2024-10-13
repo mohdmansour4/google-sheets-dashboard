@@ -104,6 +104,8 @@ function updateCheckbox(row, value) {
         }
     }).then(response => {
         console.log(`Checkbox updated for row ${rowNumber}:`, response);
+        // Re-fetch the data to reflect the new checkbox value
+        getData(); 
     }).catch(error => {
         console.error('Error updating checkbox:', error);
     });
