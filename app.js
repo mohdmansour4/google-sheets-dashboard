@@ -90,17 +90,36 @@ function sortDataByDate(data) {
     });
 }
 
-// Function to display the filtered and sorted data (with conditional formatting)
+// Function to handle checkbox update
+function updateCheckbox(row, value) {
+    const rowNumber = row + 12; // Adjust to match the row in the Google Sheet (start from S12)
+    const range = `Drip & COTD!S${rowNumber}`;
+
+    gapi.client.sheets.spreadsheets.values.update({
+        spreadsheetId: SPREADSHEET_ID,
+        range: range,
+        valueInputOption: 'USER_ENTERED',
+        resource: {
+            values: [[value ? 'TRUE' : 'FALSE']]
+        }
+    }).then(response => {
+        console.log(`Checkbox updated for row ${rowNumber}:`, response);
+    }).catch(error => {
+        console.error('Error updating checkbox:', error);
+    });
+}
+
+// Function to display the filtered and sorted data (with editable checkboxes)
 function displayData(data) {
     console.log("Displaying data...");
     // Sort the data by date (newest first)
     const sortedData = sortDataByDate(data);
     
-    let html = '<table border="1" style="direction: rtl; text-align: center;"><tr><th>التاريخ</th><th>اسم الموظف</th><th>المحصول</th><th>نسبة التركيز TDS%</th><th>الفرع</th><th>الطحنة</th><th>التركيز المناسب TDS%</th><th>الاجراء</th><th>Column S</th></tr>'; // Added "Column S"
+    let html = '<table border="1" style="direction: rtl; text-align: center;"><tr><th>التاريخ</th><th>اسم الموظف</th><th>المحصول</th><th>نسبة التركيز TDS%</th><th>الفرع</th><th>الطحنة</th><th>التركيز المناسب TDS%</th><th>الاجراء</th><th>Column S (Checkbox)</th></tr>'; // Added "Column S"
 
     sortedData.forEach((row, index) => {
         const columnQ = row[16] || ''; // Column Q value (text)
-        const columnS = row[18] || ''; // Column S value (newly fetched)
+        const columnS = row[18] === 'TRUE' ? true : false; // Column S (checkbox value)
         const columnK = row[10] || ''; // Column K value (filtered for "الخبر 1.3")
         
         // Apply conditional formatting based on values in Column Q with new colors
@@ -123,7 +142,7 @@ function displayData(data) {
                     <td>${row[11] || ''}</td> <!-- Column L: الطحنة -->
                     <td>${row[13] || ''}</td> <!-- Column N: التركيز المناسب TDS% -->
                     <td style="background-color:${color}">${columnQ}</td> <!-- Column Q: الاجراء -->
-                    <td>${columnS || ''}</td> <!-- Column S -->
+                    <td><input type="checkbox" ${columnS ? 'checked' : ''} onchange="updateCheckbox(${index}, this.checked)"></td> <!-- Editable checkbox for Column S -->
                 </tr>`;
     });
 
