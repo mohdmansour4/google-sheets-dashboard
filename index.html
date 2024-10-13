@@ -11,6 +11,108 @@
     <!-- Include the new GIS library -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 
+    <!-- Custom styles for modern look -->
+    <style>
+        body {
+            font-family: 'Verdana', sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #004aad;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .filter-section {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="date"] {
+            padding: 8px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+
+        th, td {
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            text-align: center;
+        }
+
+        th {
+            background-color: #004aad;
+            color: white;
+            font-size: 1.2em;
+        }
+
+        td {
+            font-size: 1em;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+        }
+
+        .checkbox-column {
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            table {
+                font-size: 0.9em;
+            }
+
+            th, td {
+                padding: 10px;
+            }
+        }
+
+    </style>
+
     <script>
         const API_KEY = 'AIzaSyD6eAikKznWps9K8GcflqPy03-L7KTUaWE';  // Your API key
         const SPREADSHEET_ID = '1bZIxAmb2-E3naVHbggvAs4nOAUi0J6XIcGMyU2Bmc5w';  // Your spreadsheet ID
@@ -105,7 +207,7 @@
                         <th>الطحنة</th>
                         <th>التركيز المناسب TDS%</th>
                         <th>الاجراء</th>
-                        <th>Column S (CHECKBOX)</th>
+                        <th class="checkbox-column">Column S (CHECKBOX)</th>
                     </tr>`;
             
             data.forEach((row, index) => {
@@ -156,13 +258,9 @@
 </head>
 <body>
     <h1>مؤشر أداء حاسبة الاستخلاص لفرع عُمق 1.3</h1>
-    <div>
+    <p>يقوم مؤشر الاداء بعرض العينات المرفوعة لآخر ٣٠ يوم من الاحدث الى الاقدم، والامكان تغيير المدة المحددة من خانة التاريخ.</p>
+    <div class="filter-section">
         <label for="startDate">من:</label>
         <input type="date" id="startDate" value="2024-10-13">
         <label for="endDate">إلى:</label>
-        <input type="date" id="endDate" value="2024-10-14">
-        <button id="applyFilter" style="visibility:hidden;" onclick="handleAuthClick()">تنفيذ</button>
-    </div>
-    <div id="dashboard"></div>
-</body>
-</html>
+        <input type="date" id="endDate" value="2024-10-14
