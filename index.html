@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,70 +7,153 @@
     <style>
         body {
             font-family: Verdana, sans-serif;
+            direction: rtl;
             text-align: center;
-            background-color: #f4f4f9;
-        }
-        h1 {
-            color: cornflowerblue;
         }
         table {
-            width: 100%;
+            margin: 0 auto;
             border-collapse: collapse;
+            width: 90%;
         }
         th, td {
             padding: 10px;
             text-align: center;
+            border: 1px solid #ddd;
         }
         th {
             background-color: #acc9fe;
-            color: white;
         }
-        td {
-            background-color: #fff;
+        input[type="checkbox"] {
+            transform: scale(1.5);
         }
-        tr:nth-child(even) td {
-            background-color: #f9f9f9;
-        }
-        .button {
+        #applyFilter {
             background-color: #4CAF50;
             color: white;
-            padding: 10px 20px;
             border: none;
-            border-radius: 4px;
+            padding: 10px 20px;
             cursor: pointer;
+            font-size: 18px;
+            margin-top: 20px;
         }
-        .button:hover {
+        #applyFilter:hover {
             background-color: #45a049;
         }
     </style>
-    <script src="https://apis.google.com/js/api.js"></script>
-    <script src="app.js"></script>
 </head>
 <body>
     <h1>مؤشر أداء حاسبة الاستخلاص لفرع عُمق 1.3</h1>
     <p>يقوم مؤشر الاداء بعرض العينات المرفوعة لآخر ٣٠ يوم من الاحدث الى الاقدم، والامكان تغيير المدة المحددة من خانة التاريخ.</p>
-    
     <label for="startDate">من:</label>
     <input type="date" id="startDate">
     <label for="endDate">الى:</label>
     <input type="date" id="endDate">
-    <button class="button" id="applyFilter">تنفيذ</button>
-    
-    <table id="dataTable">
-        <thead>
-            <tr>
-                <th>Column S (CHECKBOX)</th>
-                <th>الاجراء</th>
-                <th>التركيز المناسب TDS%</th>
-                <th>الطحنة</th>
-                <th>الفرع</th>
-                <th>نسبة التركيز TDS%</th>
-                <th>المحصول</th>
-                <th>اسم الموظف</th>
-                <th>التاريخ</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+    <button id="applyFilter">تنفيذ</button>
+
+    <div id="dashboard"></div>
+
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script>
+        // Replace with your actual API key and spreadsheet ID
+        const API_KEY = 'AIzaSyD6eAikKznWps9K8GcflqPy03-L7KTUaWE'; // Replace with your API key
+        const SPREADSHEET_ID = '1bZIxAmb2-E3naVHbggvAs4nOAUi0J6XIcGMyU2Bmc5w'; // Replace with your Spreadsheet ID
+        const RANGE = 'Drip & COTD!A12:S'; // Adjust the range to include column S
+        const CLIENT_ID = '1065961533552-4ukc1utf902uldqfq3nvcmrohjehbd2e.apps.googleusercontent.com'; // Replace with your actual client ID
+
+        // Function to initialize the Google API client
+        function initClient() {
+            gapi.load('client:auth2', () => {
+                gapi.client.init({
+                    apiKey: API_KEY,
+                    clientId: CLIENT_ID,
+                    discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4'],
+                    scope: 'https://www.googleapis.com/auth/spreadsheets',
+                }).then(() => {
+                    return gapi.auth2.getAuthInstance().signIn();  // Prompt user to sign in
+                }).then(() => {
+                    getData();  // Proceed to fetch data once signed in
+                }).catch((error) => {
+                    console.error('Error initializing Google API client:', error);
+                });
+            });
+        }
+
+        // Function to fetch data from the Google Sheet
+        function getData() {
+            gapi.client.sheets.spreadsheets.values.get({
+                spreadsheetId: SPREADSHEET_ID,
+                range: RANGE,
+            }).then((response) => {
+                const data = response.result.values; // Get the values from the response
+                if (data && data.length > 0) {
+                    displayData(data); // Display the fetched data
+                } else {
+                    console.log('No data found.');
+                    document.getElementById('dashboard').innerHTML = '<p>No data found in the specified range.</p>';
+                }
+            }).catch((error) => {
+                console.error('Error fetching data from Google Sheets', error);
+            });
+        }
+
+        // Function to display the fetched data in a table format
+        function displayData(data) {
+            let html = `
+                <table>
+                    <tr>
+                        <th>التاريخ</th>
+                        <th>اسم الموظف</th>
+                        <th>المحصول</th>
+                        <th>نسبة التركيز TDS%</th>
+                        <th>الفرع</th>
+                        <th>الطحنة</th>
+                        <th>التركيز المناسب TDS%</th>
+                        <th>الاجراء</th>
+                        <th>Column S (CHECKBOX)</th>
+                    </tr>`;
+            
+            data.forEach((row, index) => {
+                const checkboxValue = row[18] === 'TRUE' ? 'checked' : ''; // Adjust based on value in column S
+                html += `
+                    <tr>
+                        <td>${row[0] || ''}</td> <!-- Date -->
+                        <td>${row[1] || ''}</td> <!-- Employee Name -->
+                        <td>${row[2] || ''}</td> <!-- المحصول -->
+                        <td>${row[3] || ''}</td> <!-- نسبة التركيز TDS% -->
+                        <td>${row[10] || ''}</td> <!-- الفرع -->
+                        <td>${row[11] || ''}</td> <!-- الطحنة -->
+                        <td>${row[13] || ''}</td> <!-- التركيز المناسب TDS% -->
+                        <td>${row[16] || ''}</td> <!-- الاجراء -->
+                        <td><input type="checkbox" id="checkbox-${index}" ${checkboxValue} onclick="updateCheckbox(${index}, this.checked)"></td> <!-- Checkbox -->
+                    </tr>`;
+            });
+
+            html += '</table>';
+            document.getElementById('dashboard').innerHTML = html;
+        }
+
+        // Function to update the checkbox value in the Google Sheet
+        function updateCheckbox(rowIndex, checked) {
+            const checkboxValue = checked ? 'TRUE' : 'FALSE';
+            const range = `S${rowIndex + 13}:S${rowIndex + 13}`; // Assuming data starts from row 12
+
+            gapi.client.sheets.spreadsheets.values.update({
+                spreadsheetId: SPREADSHEET_ID,
+                range: range,
+                valueInputOption: 'USER_ENTERED',
+                resource: {
+                    values: [[checkboxValue]],
+                },
+            }).then(response => {
+                console.log('Checkbox updated successfully:', response);
+            }).catch(error => {
+                console.error('Error updating checkbox:', error);
+            });
+        }
+
+        // Initialize the client when the document is ready
+        document.addEventListener("DOMContentLoaded", function() {
+            gapi.load('client', initClient); // Load the Google API client
+        });
+    </script>
 </body>
 </html>
