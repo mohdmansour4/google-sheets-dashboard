@@ -4,35 +4,42 @@ const SPREADSHEET_ID = '1bZIxAmb2-E3naVHbggvAs4nOAUi0J6XIcGMyU2Bmc5w'; // Replac
 const RANGE = 'Drip & COTD!A12:S'; // Adjust the range to include column S
 const CLIENT_ID = '1065961533552-4ukc1utf902uldqfq3nvcmrohjehbd2e.apps.googleusercontent.com'; // Replace with your actual client ID
 
-// Function to initialize the Google API client
+// Function to initialize the Google API client with proper authentication
 function initClient() {
     gapi.load('client:auth2', () => {
-        gapi.client.init({
-            apiKey: API_KEY,
-            clientId: CLIENT_ID,
-            discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4'],
-            scope: 'https://www.googleapis.com/auth/spreadsheets',
+        gapi.auth2.init({
+            client_id: CLIENT_ID,
+            scope: 'https://www.googleapis.com/auth/spreadsheets'
         }).then(() => {
-            return gapi.auth2.getAuthInstance().signIn();  // Prompt user to sign in
-        }).then(() => {
-            getData();  // Proceed to fetch data once signed in
+            gapi.client.init({
+                apiKey: API_KEY,
+                discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4']
+            }).then(() => {
+                return gapi.auth2.getAuthInstance().signIn();  // Prompt user to sign in
+            }).then(() => {
+                getData();  // Proceed to fetch data once signed in
+            }).catch((error) => {
+                console.error('Error initializing Google API client:', error);
+            });
         }).catch((error) => {
-            console.error('Error initializing Google API client:', error);
+            console.error('Error in Google Auth initialization:', error);
         });
     });
 }
 
 // Function to fetch data from the Google Sheet
 function getData() {
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
     gapi.client.sheets.spreadsheets.values.get({
         spreadsheetId: SPREADSHEET_ID,
         range: RANGE,
     }).then((response) => {
         const data = response.result.values; // Get the values from the response
-        if (data && data.length > 0) {
-            displayData(data); // Display the fetched data
+        const filteredData = filterDataByDate(data, startDate, endDate);
+        if (filteredData && filteredData.length > 0) {
+            displayData(filteredData); // Display the fetched data
         } else {
-            console.log('No data found.');
             document.getElementById('dashboard').innerHTML = '<p>No data found in the specified range.</p>';
         }
     }).catch((error) => {
@@ -40,10 +47,19 @@ function getData() {
     });
 }
 
+// Function to filter data based on the date range
+function filterDataByDate(data, startDate, endDate) {
+    const filteredData = data.filter(row => {
+        const date = new Date(row[0]);
+        return date >= new Date(startDate) && date <= new Date(endDate);
+    });
+    return filteredData;
+}
+
 // Function to display the fetched data in a table format
 function displayData(data) {
     let html = `
-        <table border="1">
+        <table>
             <tr>
                 <th>التاريخ</th>
                 <th>اسم الموظف</th>
@@ -99,3 +115,6 @@ function updateCheckbox(rowIndex, checked) {
 document.addEventListener("DOMContentLoaded", function() {
     gapi.load('client', initClient); // Load the Google API client
 });
+
+// Add event listener to the filter button
+document.getElementById('applyFilter').addEventListener('click', getData);
