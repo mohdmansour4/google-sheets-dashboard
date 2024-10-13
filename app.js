@@ -5,15 +5,18 @@ const RANGE = 'Drip & COTD!A12:S'; // Adjust the range to include column S
 
 // Function to initialize the Google API client
 function initClient() {
-    gapi.load('client', () => {
+    gapi.load('client:auth2', () => {
         gapi.client.init({
             apiKey: API_KEY,
-            discoveryDocs: ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
+            clientId: CLIENT_ID,
+            discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4'],
+            scope: 'https://www.googleapis.com/auth/spreadsheets',
         }).then(() => {
-            console.log('Google API client loaded successfully.');
-            getData(); // Fetch data from Google Sheets
+            return gapi.auth2.getAuthInstance().signIn();  // Prompt user to sign in
+        }).then(() => {
+            getData();  // Proceed to fetch data once signed in
         }).catch((error) => {
-            console.error("Error loading Google API client", error);
+            console.error('Error initializing Google API client:', error);
         });
     });
 }
