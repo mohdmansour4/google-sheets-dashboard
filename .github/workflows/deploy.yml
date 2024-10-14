@@ -1,0 +1,35 @@
+name: Deploy Google Sheets App
+
+on:
+  push:
+    branches:
+      - main  # or any branch you want to trigger this workflow
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'  # Use the Node.js version your project requires
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Deploy Google Sheets API logic
+      run: |
+        echo $GOOGLE_SERVICE_ACCOUNT_KEY > credentials.json  # Write the secret to a file
+        node your-script.js  # Replace this with your actual script file that interacts with Google Sheets
+
+      env:
+        GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}  # Use the secret from GitHub
+
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./dist  # Replace with your actual build folder if needed
